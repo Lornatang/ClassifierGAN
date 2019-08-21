@@ -13,8 +13,8 @@
 # ==============================================================================
 
 import argparse
-import random
 import os
+import random
 
 import torch.backends.cudnn as cudnn
 import torch.utils.data.dataloader
@@ -118,7 +118,7 @@ def test(model):
 
 
 def visual(model):
-  classes = ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+  classes = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
   class_correct = list(0. for _ in range(10))
   class_total = list(0. for _ in range(10))
 
