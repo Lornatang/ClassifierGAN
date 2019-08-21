@@ -28,7 +28,7 @@ parser = argparse.ArgumentParser(description='PyTorch MNIST Classifier')
 parser.add_argument('--dataroot', type=str, default="~/pytorch_datasets", help="download train dataset path.")
 parser.add_argument('--datasets', type=str, default="mnist", help="mnist datasets or fashion-mnist datasets.")
 parser.add_argument('--phase', type=str, default='train', help="train or eval?")
-parser.add_argument('--model', type=str, default="", help="load model path.")
+parser.add_argument('--model_path', type=str, default="", help="load model path.")
 opt = parser.parse_args()
 
 try:
@@ -94,6 +94,8 @@ elif opt.datasets == "fmnist":
 
 # Load model
 net = lenet()
+if opt.model_path != "":
+  net.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage))
 # set up gpu flow
 net.to(device)
 
@@ -126,7 +128,7 @@ def train():
         print(f"Train Epoch: {epoch} [{i * 128}/{len(train_dataloader.dataset)} "
               f"({100. * i / len(train_dataloader):.2f}%)] "
               f"Loss: {loss.item():.6f}", end="\r")
-    torch.save(net.state_dict(), f"./checkpoints/{opt.datasets}_epoch_{epoch + 1}.pt")
+    torch.save(net.state_dict(), f"./checkpoints/{opt.datasets}_epoch_{epoch + 1}.pth")
 
 
 def test(model):
@@ -194,11 +196,11 @@ if __name__ == '__main__':
   elif opt.phase == "eval":
     if opt.model != "":
       print("Loading model...\n")
-      net.load_state_dict(torch.load(opt.model, map_location=lambda storage, loc: storage))
+      net.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage))
       print("Loading model successful!")
       test(net)
       visual(net)
     else:
-      print("WARNING: You want use eval pattern, so you should add --model MODEL_PATH")
+      print("WARNING: You want use eval pattern, so you should add --model_path MODEL_PATH")
   else:
     print(opt)
