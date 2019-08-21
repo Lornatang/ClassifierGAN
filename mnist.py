@@ -23,6 +23,7 @@ import torchvision.datasets as dset
 import torchvision.transforms as transforms
 
 from nets.lenet import lenet
+from nets.custom_alexnet import customalexnet
 
 parser = argparse.ArgumentParser(description='PyTorch MNIST Classifier')
 parser.add_argument('--dataroot', type=str, default="~/pytorch_datasets", help="download train dataset path.")
@@ -93,11 +94,16 @@ elif opt.datasets == "fmnist":
                                                 shuffle=False, num_workers=8)
 
 # Load model
-net = lenet(nc=1, num_classes=10)
-if opt.model_path != "":
-  net.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage))
-# set up gpu flow
-net.to(device)
+if opt.datasets == "mnist":
+  net = lenet(nc=1, num_classes=10)
+  if opt.model_path != "":
+    net.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage))
+  net.to(device)
+elif opt.datasets == "fmnist":
+  net = customalexnet(nc=1, num_classes=10)
+  if opt.model_path != "":
+    net.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage))
+  net.to(device)
 
 # Loss function
 criterion = torch.nn.CrossEntropyLoss()
