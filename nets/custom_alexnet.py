@@ -37,7 +37,7 @@ class CustomAlexNet(nn.Module):
       nn.ReLU(inplace=True),
       nn.MaxPool2d(kernel_size=2, stride=2),
     )
-    self.avgpool = nn.AdaptiveAvgPool2d((3, 3))
+    self.avgpool = nn.AdaptiveAvgPool2d((2, 2))
     self.classifier = nn.Sequential(
       nn.Dropout(),
       nn.Linear(256 * 1 * 1, 1024),
