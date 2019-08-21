@@ -121,7 +121,7 @@ def visual(model):
              "Skirt",
              "Sneaker",
              "Bag",
-             "ankle boot")
+             "Ankle boot")
   class_correct = list(0. for _ in range(10))
   class_total = list(0. for _ in range(10))
 

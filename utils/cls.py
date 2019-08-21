@@ -43,3 +43,4 @@ def classifier(model, dataloader, classes, device):
 
       outputs = model(inputs)
       _, predicted = torch.max(outputs, 1)
+
