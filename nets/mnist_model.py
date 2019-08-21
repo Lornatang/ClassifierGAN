@@ -23,11 +23,8 @@ __all__ = ['AlexNet', 'alexnet']
 class AlexNet(nn.Module):
   """ On the basis of the original improvement"""
 
-  def __init__(self, num_classes=10, ngpu=1):
+  def __init__(self):
     super(AlexNet, self).__init__()
-
-    self.ngpu = ngpu
-
     self.features = nn.Sequential(
       nn.Conv2d(1, 32, kernel_size=3, stride=1, padding=2),
       nn.ReLU(inplace=True),
@@ -50,18 +47,13 @@ class AlexNet(nn.Module):
       nn.Dropout(),
       nn.Linear(1024, 512),
       nn.ReLU(inplace=True),
-      nn.Linear(512, num_classes),
+      nn.Linear(512, 10),
     )
 
   def forward(self, x):
-    if x.is_cuda and self.ngpu > 1:
-      x = nn.parallel.data_parallel(self.features, x, range(self.ngpu))
-      x = torch.flatten(x, 1)
-      x = nn.parallel.data_parallel(self.classifier, x, range(self.ngpu))
-    else:
-      x = self.features(x)
-      x = torch.flatten(x, 1)
-      x = self.classifier(x)
+    x = self.features(x)
+    x = torch.flatten(x, 1)
+    x = self.classifier(x)
     return x
 
 
