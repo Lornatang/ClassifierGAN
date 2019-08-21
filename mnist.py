@@ -179,7 +179,7 @@ def visual(model):
   if opt.datasets == "mnist":
     classes = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
     for i in range(10):
-      print(f"Accuracy of {classes[i]:10s} : {100 * class_correct[i] / class_total[i]:.2f}%")
+      print(f"Accuracy of {classes[i]:5s} : {100 * class_correct[i] / class_total[i]:.2f}%")
   elif opt.datasets == "fmnist":
     classes = ["T-shirt/top",
                "Trouser",
@@ -192,7 +192,7 @@ def visual(model):
                "Bag",
                "Ankle_boot"]
     for i in range(10):
-      print(f"Accuracy of {classes[i]:10s} : {100 * class_correct[i] / class_total[i]:.2f}%")
+      print(f"Accuracy of {classes[i]:20s} : {100 * class_correct[i] / class_total[i]:.2f}%")
 
 
 if __name__ == '__main__':
