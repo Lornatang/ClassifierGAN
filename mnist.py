@@ -25,6 +25,7 @@ import torchvision.transforms as transforms
 from nets.lenet import lenet
 
 parser = argparse.ArgumentParser(description='PyTorch MNIST Classifier')
+parser.add_argument('--dataroot', type=str, default="~/pytorch_datasets", help="download train dataset path.")
 parser.add_argument('--datasets', type=str, default="mnist", help="mnist datasets or fashion-mnist datasets.")
 parser.add_argument('--phase', type=str, default='train', help="train or eval?")
 parser.add_argument('--model', type=str, default="", help="load model path.")
