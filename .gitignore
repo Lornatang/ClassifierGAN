@@ -128,4 +128,10 @@ dmypy.json
 
 # Mac file
 .DS_Store
+
+# Model file
 *.pt
+
+# image file
+.png
+.jpg
