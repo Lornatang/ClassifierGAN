@@ -133,5 +133,5 @@ dmypy.json
 *.pt
 
 # image file
-.png
-.jpg
+*.png
+*.jpg
