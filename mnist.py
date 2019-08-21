@@ -93,7 +93,7 @@ elif opt.datasets == "fmnist":
                                                 shuffle=False, num_workers=8)
 
 # Load model
-net = lenet()
+net = lenet(nc=1, num_classes=10)
 if opt.model_path != "":
   net.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage))
 # set up gpu flow
