@@ -15,32 +15,63 @@
 import os
 
 import torch
+from PIL import Image
+
+from utils.process import pil_to_tensor
+from utils.process import tensor_to_pil
 
 
-def classifier(model, dataloader, classes, device):
+def classifier(model, model_path, datasets, dataroot, img_size, channels, classes_names, device):
   """ A classification function used to classify pictures of locations.
+
   Args:
-    model: Neural network structure loaded by classifier.
-    dataloader: Data flows that need to be classified.
-    classes: Multiple picture tags.
-    device: Set whether to use a GPU
+    model: Modified neural network model.
+    model_path: Loaded model address.
+    datasets: The folder used for the final classification
+    dataroot: Data folders to categorize.
+    img_size: Put the size of the image.
+    channels: image channel. rgb->3, gray->1.
+    classes_names: Categories of objects.
+    device: Run-time device selection.
+
   Examples:
-    >> train_dataset = dset.MNIST(**kwargs)
-    >> train_dataloader = torch.utils.data.DataLoader(train_dataset, **kwargs)
     >> model = Model(**kwargs)
-    >> classifier(model, train_dataloader)
+    >> model_path = "alex.pt"
+    >> dataset = "mnist"
+    >> dataroot = "unknown"
+    >> img_size = 28
+    >> channels = 1
+    >> classes_name = ["1", "2", "3", "4"]
+    >> device = torch.device(**kwargs)
+    >> classifier(model, model_path, datasets, dataroot, img_size, channels, classes_name, device)
   """
-  for i in range(len(classes)):
+  # create classifier folder.
+  for i in range(len(classes_names)):
     try:
-      os.makedirs(classes[i])
+      dirname = os.path.join(os.getcwd(), datasets, classes_names[i])
+      os.makedirs(dirname)
     except OSError:
       pass
+
+  # load model file
+  model.load_state_dict(torch.load(model_path, map_location=lambda storage, loc: storage))
+  model.eval()
   with torch.no_grad():
-    for i, data in enumerate(dataloader):
-      # get the inputs; data is a list of [inputs, labels]
-      inputs, _ = data
-      inputs = inputs.to(device)
+    for file in os.listdir(dataroot):
+      # get image abs path
+      img_path = os.path.join(os.getcwd(), dataroot, file)
+      # ignore mac sys file
+      if os.path.split(img_path)[1] == ".DS_Store":
+        continue
+      # Load image data and transfrom tensor data.
+      image = Image.open(img_path)
+      inputs = pil_to_tensor(img_size, channels, image, device)
 
-      outputs = model(inputs)
-      _, predicted = torch.max(outputs, 1)
+      # prediction image label.
+      predicted = model(inputs)
+      label = int(torch.argmax(predicted[0]))
 
+      # Put the identified pictures into the corresponding folder.
+      image = tensor_to_pil(inputs)
+      img_path = os.path.join(datasets, classes_names[label], file)
+      image.save(img_path)
