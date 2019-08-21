@@ -47,7 +47,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 if opt.datasets == "mnist":
   # load train datasets
-  train_dataset = dset.MNIST(root="~/pytorch_datasets",
+  train_dataset = dset.MNIST(root=opt.dataroot,
                              download=True,
                              train=True,
                              transform=torchvision.transforms.Compose([
@@ -58,7 +58,7 @@ if opt.datasets == "mnist":
   train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=128,
                                                  shuffle=True, num_workers=8)
   # load test datasets
-  test_dataset = dset.MNIST(root="~/pytorch_datasets",
+  test_dataset = dset.MNIST(root=opt.dataroot,
                             download=True,
                             train=False,
                             transform=torchvision.transforms.Compose([
@@ -70,7 +70,7 @@ if opt.datasets == "mnist":
                                                 shuffle=False, num_workers=8)
 elif opt.datasets == "fmnist":
   # load train datasets
-  train_dataset = dset.FashionMNIST(root="~/pytorch_datasets",
+  train_dataset = dset.FashionMNIST(root=opt.dataroot,
                                     download=True,
                                     train=True,
                                     transform=torchvision.transforms.Compose([
@@ -81,7 +81,7 @@ elif opt.datasets == "fmnist":
   train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=128,
                                                  shuffle=True, num_workers=8)
   # load test datasets
-  test_dataset = dset.FashionMNIST(root="~/pytorch_datasets",
+  test_dataset = dset.FashionMNIST(root=opt.dataroot,
                                    download=True,
                                    train=False,
                                    transform=torchvision.transforms.Compose([
