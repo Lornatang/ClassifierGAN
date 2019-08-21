@@ -14,7 +14,6 @@
 
 import argparse
 import random
-import os
 
 import torch.backends.cudnn as cudnn
 import torch.utils.data.dataloader
@@ -23,11 +22,6 @@ import torchvision.datasets as dset
 import torchvision.transforms as transforms
 
 from nets.mnist_model import alexnet
-
-try:
-  os.makedirs("./checkpoints")
-except OSError:
-  pass
 
 manualSeed = random.randint(1, 10000)
 random.seed(manualSeed)
@@ -39,24 +33,24 @@ cudnn.benchmark = True
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # load train datasets
-train_dataset = dset.MNIST(root="~/pytorch_datasets",
-                           download=True,
-                           train=True,
-                           transform=torchvision.transforms.Compose([
-                             transforms.ToTensor(),
-                             transforms.Normalize([0.5], [0.5]),
-                           ]))
+train_dataset = dset.FashionMNIST(root="~/pytorch_datasets",
+                                  download=True,
+                                  train=True,
+                                  transform=torchvision.transforms.Compose([
+                                    transforms.ToTensor(),
+                                    transforms.Normalize([0.5], [0.5]),
+                                  ]))
 
 train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=128,
                                                shuffle=True, num_workers=8)
 # load test datasets
-test_dataset = dset.MNIST(root="~/pytorch_datasets",
-                          download=True,
-                          train=False,
-                          transform=torchvision.transforms.Compose([
-                            transforms.ToTensor(),
-                            transforms.Normalize([0.5], [0.5]),
-                          ]))
+test_dataset = dset.FashionMNIST(root="~/pytorch_datasets",
+                                 download=True,
+                                 train=False,
+                                 transform=torchvision.transforms.Compose([
+                                   transforms.ToTensor(),
+                                   transforms.Normalize([0.5], [0.5]),
+                                 ]))
 
 test_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=128,
                                               shuffle=False, num_workers=8)
@@ -91,11 +85,11 @@ def train():
       loss.backward()
       optimizer.step()
 
-      if i % 20 == 0:
+      if i % 5 == 0:
         print(f"Train Epoch: {epoch} [{i * 128}/{len(train_dataloader.dataset)} "
               f"({100. * i / len(train_dataloader):.2f}%)] "
               f"Loss: {loss.item():.6f}", end="\r")
-    torch.save(net.state_dict(), f"./checkpoints/mnist_epoch_{epoch + 1}.pt")
+    torch.save(net.state_dict(), f"./checkpoints/fmnist_epoch_{epoch + 1}.pt")
 
 
 def test(model):
@@ -118,7 +112,16 @@ def test(model):
 
 
 def visual(model):
-  classes = ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+  classes = ("T-shirt/top",
+             "Trouser",
+             "Pullover",
+             "Dress",
+             "Coat",
+             "Sandal",
+             "Skirt",
+             "Sneaker",
+             "Bag",
+             "ankle boot")
   class_correct = list(0. for _ in range(10))
   class_total = list(0. for _ in range(10))
 
@@ -139,15 +142,14 @@ def visual(model):
         class_total[label] += 1
 
   for i in range(10):
-    print(f"Accuracy of {classes[i]:5s} : {100 * class_correct[i] / class_total[i]:.2f}%")
+    print(f"Accuracy of {classes[i]:10s} : {100 * class_correct[i] / class_total[i]:.2f}%")
 
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser(description='PyTorch MNIST Classifier')
+  parser = argparse.ArgumentParser(description='PyTorch Fashion-MNIST Classifier')
   parser.add_argument('--phase', type=str, default='train', help="train or eval?")
   parser.add_argument('--model', type=str, default="", help="load model path.")
   opt = parser.parse_args()
-
   if opt.phase == "train":
     train()
   elif opt.phase == "eval":
