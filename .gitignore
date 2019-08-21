@@ -128,3 +128,4 @@ dmypy.json
 
 # Mac file
 .DS_Store
+*.pt
