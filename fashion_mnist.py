@@ -112,7 +112,7 @@ def test(model):
 
 
 def visual(model):
-  classes = ("T-shirt/top",
+  classes = ["T-shirt/top",
              "Trouser",
              "Pullover",
              "Dress",
@@ -121,7 +121,7 @@ def visual(model):
              "Skirt",
              "Sneaker",
              "Bag",
-             "Ankle boot")
+             "Ankle_boot"]
   class_correct = list(0. for _ in range(10))
   class_total = list(0. for _ in range(10))
 
