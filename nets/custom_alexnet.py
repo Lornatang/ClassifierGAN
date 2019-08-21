@@ -37,10 +37,9 @@ class CustomAlexNet(nn.Module):
       nn.ReLU(inplace=True),
       nn.MaxPool2d(kernel_size=2, stride=2),
     )
-    self.avgpool = nn.AdaptiveAvgPool2d((2, 2))
     self.classifier = nn.Sequential(
       nn.Dropout(),
-      nn.Linear(256 * 1 * 1, 1024),
+      nn.Linear(256 * 3 * 3, 1024),
       nn.ReLU(inplace=True),
       nn.Dropout(),
       nn.Linear(1024, 512),
@@ -50,7 +49,6 @@ class CustomAlexNet(nn.Module):
 
   def forward(self, x):
     x = self.features(x)
-    x = self.avgpool(x)
     x = torch.flatten(x, 1)
     x = self.classifier(x)
     return x
