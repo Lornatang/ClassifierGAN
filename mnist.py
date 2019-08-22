@@ -63,18 +63,17 @@ if opt.datasets == "mnist":
   if torch.cuda.device_count() > 1:
     model = torch.nn.DataParallel(lenet())
   else:
-    medel = lenet()
+    model = lenet()
+
 elif opt.datasets == "fmnist":
   if torch.cuda.device_count() > 1:
     model = torch.nn.DataParallel(resnet18())
   else:
-    medel = resnet18()
+    model = resnet18()
 else:
   model = ""
   print(opt)
 
-if opt.model_path != "":
-  model.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage))
 
 model.to(device)
 print(model)
