@@ -20,7 +20,7 @@ from nets.alexnet_test import alexnet
 from utils.cls import classifier
 
 # set driver
-device = torch.device("gpu:0" if torch.cuda.is_available() else "cpu")
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # load model
 model = alexnet().to(device)
 
