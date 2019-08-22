@@ -23,7 +23,7 @@ class LeNet(nn.Module):
   def __init__(self, nc, num_classes):
     super(LeNet, self).__init__()
     self.features = nn.Sequential(
-      nn.Conv2d(nc, 6, kernel_size=3, stride=1, padding=1),
+      nn.Conv2d(1, 6, kernel_size=3, stride=1, padding=1),
       nn.MaxPool2d(kernel_size=2, stride=2),
       nn.Conv2d(6, 16, kernel_size=5, stride=1, padding=0),
       nn.MaxPool2d(kernel_size=2, stride=2),
@@ -31,7 +31,7 @@ class LeNet(nn.Module):
     self.classifier = nn.Sequential(
       nn.Linear(400, 120),
       nn.Linear(120, 84),
-      nn.Linear(84, num_classes),
+      nn.Linear(84, 10),
     )
 
   def forward(self, x):
