@@ -37,6 +37,7 @@ parser.add_argument('--weight_decay', type=float, default=1e-4, help="Mainly to 
 parser.add_argument('--phase', type=str, default='eval', help="train or eval?")
 parser.add_argument('--model_path', type=str, default="", help="load model path.")
 opt = parser.parse_args()
+print(opt)
 
 try:
   os.makedirs("./checkpoints")
