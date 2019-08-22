@@ -214,7 +214,6 @@ def run():
     prec1 = test(model)
 
     # remember best prec@1 and save checkpoint if desired
-    # is_best = prec1 > best_prec1
     best_prec1 = max(prec1, best_prec1)
 
     print("Epoch Summary: ")
@@ -232,7 +231,7 @@ if __name__ == '__main__':
       model.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage))
       print("Loading model successful!")
       accuracy = test(model)
-      print(f"Accuracy of the network on the 10000 test images: {accuracy:.2f}")
+      print(f"\nAccuracy of the network on the 10000 test images: {accuracy:.2f}%.\n")
       visual(model)
     else:
       print("WARNING: You want use eval pattern, so you should add --model_path MODEL_PATH")
