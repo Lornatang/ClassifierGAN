@@ -26,6 +26,7 @@ parser.add_argument('--dataroot', type=str, default="test_imgs", help="Data fold
 parser.add_argument('--img_size', type=int, default=28, help="Data folders to categorize.")
 parser.add_argument('--channels', type=int, default=1, help="Number of channels in the image")
 parser.add_argument('--classes_names', type=int, help="Number of channels in the image")
+parser.add_argument('--model_path', type=str, help="Load model path.")
 opt = parser.parse_args()
 print(opt)
 
