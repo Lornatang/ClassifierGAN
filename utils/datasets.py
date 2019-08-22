@@ -20,7 +20,7 @@ import torchvision.transforms as transforms
 import datasets
 
 
-def load_datasets(name, root):
+def load_datasets(name, root, batch_size):
   if name == "mnist":
     train_dataset = datasets.MNIST(root=root,
                                    download=True,
@@ -32,7 +32,7 @@ def load_datasets(name, root):
                                      transforms.Normalize([0.5], [0.5]),
                                    ]))
 
-    train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=128,
+    train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=batch_size,
                                                    shuffle=True, num_workers=8)
     test_dataset = datasets.MNIST(root=root,
                                   download=True,
@@ -43,7 +43,7 @@ def load_datasets(name, root):
                                     transforms.Normalize([0.5], [0.5]),
                                   ]))
 
-    test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=128,
+    test_dataloader = torch.utils.data.DataLoader(test_dataset, batch_size=batch_size,
                                                   shuffle=False, num_workers=8)
     return train_dataloader, test_dataloader
 
