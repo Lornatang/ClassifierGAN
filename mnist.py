@@ -60,9 +60,15 @@ train_dataloader, test_dataloader = load_datasets(opt.datasets, opt.dataroot, op
 
 # Load model
 if opt.datasets == "mnist":
-  model = torch.nn.DataParallel(lenet())
+  if torch.cuda.device_count() > 1:
+    model = torch.nn.DataParallel(lenet())
+  else:
+    medel = lenet()
 elif opt.datasets == "fmnist":
-  model = torch.nn.DataParallel(resnet18())
+  if torch.cuda.device_count() > 1:
+    model = torch.nn.DataParallel(resnet18())
+  else:
+    medel = resnet18()
 else:
   model = ""
   print(opt)
