@@ -16,7 +16,7 @@ import argparse
 
 import torch
 
-from nets.mnist_model import alexnet
+from nets.alexnet_test import alexnet
 from utils.cls import classifier
 
 # set driver
