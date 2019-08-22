@@ -136,8 +136,8 @@ def train(train_dataloader, model, criterion, optimizer, epochs):
   # switch to train mode
   model.train()
 
-  end = time.time(epochs)
-  for epoch in range():
+  end = time.time()
+  for epoch in range(epochs):
     for i, data in enumerate(train_dataloader):
 
       # measure data loading time 计算加载数据的时间
@@ -248,11 +248,11 @@ def run():
     adjust_learning_rate(opt.lr, optimizer, epoch)
 
     # train for one epoch
-    print("\nBegin Training Epoch {}".format(epoch + 1))
+    print(f"\nBegin Training Epoch {epoch + 1}")
     train(train_dataloader, model, criterion, optimizer, epoch)
 
     # evaluate on validation set
-    print("Begin Validation @ Epoch {}".format(epoch + 1))
+    print(f"Begin Validation @ Epoch {epoch + 1}")
     prec1 = test(test_dataloader, model)
 
     # remember best prec@1 and save checkpoint if desired
