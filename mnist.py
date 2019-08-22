@@ -20,7 +20,7 @@ import time
 import torch.backends.cudnn as cudnn
 import torch.utils.data.dataloader
 
-from nets.alexnet_test import alexnet
+from nets.resnet_test import resnet18
 from nets.lenet import lenet
 from utils.adjust import adjust_learning_rate
 from utils.datasets import load_datasets
@@ -61,7 +61,7 @@ train_dataloader, test_dataloader = load_datasets(opt.datasets, opt.dataroot, op
 if opt.datasets == "mnist":
   model = lenet(nc=1, num_classes=10)
 elif opt.datasets == "fmnist":
-  model = alexnet(nc=1, num_classes=10)
+  model = resnet18()
 else:
   model = ""
   print(opt)
