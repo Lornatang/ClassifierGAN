@@ -19,13 +19,11 @@ import time
 
 import torch.backends.cudnn as cudnn
 import torch.utils.data.dataloader
-import torchvision
-import torchvision.datasets as dset
-import torchvision.transforms as transforms
 
 from nets.alexnet_test import alexnet
 from nets.lenet import lenet
 from utils.adjust import adjust_learning_rate
+from utils.datasets import load_datasets
 from utils.eval import accuracy
 from utils.misc import AverageMeter
 
@@ -55,54 +53,8 @@ cudnn.benchmark = True
 # setup gpu driver
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-if opt.datasets == "mnist":
-  # load train datasets
-  train_dataset = dset.MNIST(root=opt.dataroot,
-                             download=True,
-                             train=True,
-                             transform=torchvision.transforms.Compose([
-                               transforms.ToTensor(),
-                               transforms.Normalize([0.5], [0.5]),
-                             ]))
-
-  train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=128,
-                                                 shuffle=True, num_workers=8)
-  # load test datasets
-  test_dataset = dset.MNIST(root=opt.dataroot,
-                            download=True,
-                            train=False,
-                            transform=torchvision.transforms.Compose([
-                              transforms.ToTensor(),
-                              transforms.Normalize([0.5], [0.5]),
-                            ]))
-
-  test_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=128,
-                                                shuffle=False, num_workers=8)
-elif opt.datasets == "fmnist":
-  # load train datasets
-  train_dataset = dset.FashionMNIST(root=opt.dataroot,
-                                    download=True,
-                                    train=True,
-                                    transform=torchvision.transforms.Compose([
-                                      transforms.ToTensor(),
-                                      transforms.Normalize([0.5], [0.5]),
-                                    ]))
-
-  train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=128,
-                                                 shuffle=True, num_workers=8)
-  # load test datasets
-  test_dataset = dset.FashionMNIST(root=opt.dataroot,
-                                   download=True,
-                                   train=False,
-                                   transform=torchvision.transforms.Compose([
-                                     transforms.ToTensor(),
-                                     transforms.Normalize([0.5], [0.5]),
-                                   ]))
-
-  test_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=128,
-                                                shuffle=False, num_workers=8)
-else:
-  print(opt)
+# Load datasets
+train_dataloader, test_dataloader = load_datasets(opt.datasets, opt.dataroot)
 
 # Load model
 if opt.datasets == "mnist":
@@ -126,7 +78,7 @@ criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=opt.lr, momentum=opt.momentum, weight_decay=opt.weight_decay)
 
 
-def train(train_dataloader, model, criterion, optimizer, epochs):
+def train(train_dataloader, model, criterion, optimizer, epoch):
   batch_time = AverageMeter()
   data_time = AverageMeter()
   losses = AverageMeter()
@@ -137,48 +89,47 @@ def train(train_dataloader, model, criterion, optimizer, epochs):
   model.train()
 
   end = time.time()
-  for epoch in range(epochs):
-    for i, data in enumerate(train_dataloader):
+  for i, data in enumerate(train_dataloader):
 
-      # measure data loading time 计算加载数据的时间
-      data_time.update(time.time() - end)
+    # measure data loading time
+    data_time.update(time.time() - end)
 
-      # get the inputs; data is a list of [inputs, labels]
-      inputs, targets = data
-      inputs = inputs.to(device)
-      targets = targets.to(device)
+    # get the inputs; data is a list of [inputs, labels]
+    inputs, targets = data
+    inputs = inputs.to(device)
+    targets = targets.to(device)
 
-      # compute output
-      output = model(inputs)
-      loss = criterion(output, targets)
+    # compute output
+    output = model(inputs)
+    loss = criterion(output, targets)
 
-      # measure accuracy and record loss
-      prec1, prec5 = accuracy(output, targets, topk=(1, 5))
-      losses.update(loss.item(), inputs.size(0))
-      top1.update(prec1, inputs.size(0))
-      top5.update(prec5, inputs.size(0))
+    # measure accuracy and record loss
+    prec1, prec5 = accuracy(output, targets, topk=(1, 5))
+    losses.update(loss.item(), inputs.size(0))
+    top1.update(prec1, inputs.size(0))
+    top5.update(prec5, inputs.size(0))
 
-      # compute gradients in a backward pass
-      optimizer.zero_grad()
-      loss.backward()
+    # compute gradients in a backward pass
+    optimizer.zero_grad()
+    loss.backward()
 
-      # Call step of optimizer to update model params
-      optimizer.step()
+    # Call step of optimizer to update model params
+    optimizer.step()
 
-      # measure elapsed time
-      batch_time.update(time.time() - end)
-      end = time.time()
+    # measure elapsed time
+    batch_time.update(time.time() - end)
+    end = time.time()
 
-      if i % 5 == 0:
-        print(f"Epoch: [{epoch}] [{i}/{len(train_dataloader)}]\t"
-              f"Time: {data_time.val:.3f} ({data_time.avg:.3f})\t"
-              f"Loss: {loss.item():.6f}\t"
-              f"Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t"
-              f"Prec@5 {top5.val:.3f} ({top5.avg:.3f})", end="\r")
-    torch.save(model.state_dict(), f"./checkpoints/{opt.datasets}_epoch_{epoch + 1}.pth")
+    if i % 5 == 0:
+      print(f"Epoch: [{epoch}] [{i}/{len(train_dataloader)}]\t"
+            f"Time: {data_time.val:.3f} ({data_time.avg:.3f})\t"
+            f"Loss: {loss.item():.6f}\t"
+            f"Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t"
+            f"Prec@5 {top5.val:.3f} ({top5.avg:.3f})", end="\r")
+  torch.save(model.state_dict(), f"./checkpoints/{opt.datasets}_epoch_{epoch + 1}.pth")
 
 
-def test(test_dataloader, model):
+def test(model):
   # switch to evaluate mode
   model.eval()
   # init value
@@ -200,7 +151,7 @@ def test(test_dataloader, model):
   return accuracy
 
 
-def visual(test_dataloader, model):
+def visual(model):
   class_correct = list(0. for _ in range(10))
   class_total = list(0. for _ in range(10))
 
@@ -253,7 +204,7 @@ def run():
 
     # evaluate on validation set
     print(f"Begin Validation @ Epoch {epoch + 1}")
-    prec1 = test(test_dataloader, model)
+    prec1 = test(model)
 
     # remember best prec@1 and save checkpoint if desired
     # is_best = prec1 > best_prec1
@@ -273,6 +224,7 @@ if __name__ == '__main__':
       print("Loading model...\n")
       model.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage))
       print("Loading model successful!")
+      test(model)
       visual(model)
     else:
       print("WARNING: You want use eval pattern, so you should add --model_path MODEL_PATH")
