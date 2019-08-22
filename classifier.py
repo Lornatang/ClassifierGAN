@@ -21,7 +21,6 @@ from nets.resnet_test import resnet18
 from utils.cls import classifier
 
 parser = argparse.ArgumentParser(description='PyTorch Classifier Utils!')
-parser.add_argument('--model_path', type=str, default="", help="load model path.")
 parser.add_argument('--datasets', type=str, default="mnist", help="Datasets name.")
 parser.add_argument('--dataroot', type=str, default="test_imgs", help="Data folders to categorize.")
 parser.add_argument('--img_size', type=int, default=28, help="Data folders to categorize.")
@@ -41,18 +40,18 @@ elif opt.datasets == "fmnist":
 
 # prediction label names
 if opt.datasets == "mnist":
-  opt.classes_names = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+  classes_names = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 elif opt.datasets == "fmnist":
-  opt.classes_names = ["T-shirt/top",
-                       "Trouser",
-                       "Pullover",
-                       "Dress",
-                       "Coat",
-                       "Sandal",
-                       "Skirt",
-                       "Sneaker",
-                       "Bag",
-                       "Ankle_boot"]
+  classes_names = ["T-shirt/top",
+                   "Trouser",
+                   "Pullover",
+                   "Dress",
+                   "Coat",
+                   "Sandal",
+                   "Skirt",
+                   "Sneaker",
+                   "Bag",
+                   "Ankle_boot"]
 
 
 def run():
@@ -62,7 +61,7 @@ def run():
              dataroot=opt.dataroot,
              img_size=opt.img_size,
              channels=opt.channels,
-             classes_names=opt.classes_names,
+             classes_names=classes_names,
              device=device)
 
 
