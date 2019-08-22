@@ -30,6 +30,7 @@ from utils.misc import AverageMeter
 parser = argparse.ArgumentParser(description='PyTorch MNIST Classifier')
 parser.add_argument('--dataroot', type=str, default="~/pytorch_datasets", help="download train dataset path.")
 parser.add_argument('--datasets', type=str, default="mnist", help="mnist datasets or fashion-mnist datasets.")
+parser.add_argument('--batch_size', type=int, default=128, help="Every train dataset size.")
 parser.add_argument('--lr', type=float, default=0.1, help="starting lr, every 30 epoch decay 10.")
 parser.add_argument('--momentum', type=float, default=0.9, help="The ratio of accelerating convergence.")
 parser.add_argument('--weight_decay', type=float, default=1e-4, help="Mainly to prevent overfitting.")
@@ -54,7 +55,7 @@ cudnn.benchmark = True
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # Load datasets
-train_dataloader, test_dataloader = load_datasets(opt.datasets, opt.dataroot)
+train_dataloader, test_dataloader = load_datasets(opt.datasets, opt.dataroot, opt.batch_size)
 
 # Load model
 if opt.datasets == "mnist":
