@@ -16,26 +16,43 @@ import argparse
 
 import torch
 
-from nets.alexnet_test import alexnet
+from nets.lenet import lenet
+from nets.resnet_test import resnet18
 from utils.cls import classifier
+
+parser = argparse.ArgumentParser(description='PyTorch Classifier Utils!')
+parser.add_argument('--model_path', type=str, default="", help="load model path.")
+parser.add_argument('--datasets', type=str, default="mnist", help="Datasets name.")
+parser.add_argument('--dataroot', type=str, default="test_imgs", help="Data folders to categorize.")
+parser.add_argument('--img_size', type=int, default=28, help="Data folders to categorize.")
+parser.add_argument('--channels', type=int, default=1, help="Number of channels in the image")
+parser.add_argument('--classes_names', type=int, help="Number of channels in the image")
+opt = parser.parse_args()
+print(opt)
 
 # set driver
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 # load model
-model = alexnet().to(device)
+if opt.datasets == "mnist":
+  model = lenet().to(device)
+elif opt.datasets == "fmnist":
+  model = resnet18().to(device)
 
 # prediction label names
-mnist_classes_names = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-fmnist_classes_names = ["T-shirt/top",
-                        "Trouser",
-                        "Pullover",
-                        "Dress",
-                        "Coat",
-                        "Sandal",
-                        "Skirt",
-                        "Sneaker",
-                        "Bag",
-                        "Ankle_boot"]
+if opt.datasets == "mnist":
+  opt.classes_names = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+elif opt.datasets == "fmnist":
+  opt.classes_names = ["T-shirt/top",
+                       "Trouser",
+                       "Pullover",
+                       "Dress",
+                       "Coat",
+                       "Sandal",
+                       "Skirt",
+                       "Sneaker",
+                       "Bag",
+                       "Ankle_boot"]
 
 
 def run():
@@ -50,15 +67,6 @@ def run():
 
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser(description='PyTorch Classifier Utils!')
-  parser.add_argument('--model_path', type=str, default="", help="load model path.")
-  parser.add_argument('--datasets', type=str, default="mnist", help="Datasets name.")
-  parser.add_argument('--dataroot', type=str, default="test_imgs", help="Data folders to categorize.")
-  parser.add_argument('--img_size', type=int, default=28, help="Data folders to categorize.")
-  parser.add_argument('--channels', type=int, default=1, help="Number of channels in the image")
-  parser.add_argument('--classes_names', type=int, default=mnist_classes_names, help="Number of channels in the image")
-  opt = parser.parse_args()
-
   if opt.model_path != "":
     print("Starting running......")
     run()
