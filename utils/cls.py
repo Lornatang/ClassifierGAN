@@ -66,6 +66,7 @@ def classifier(model, model_path, datasets, dataroot, img_size, channels, classe
       # Load image data and transfrom tensor data.
       image = Image.open(img_path)
       inputs = pil_to_tensor(img_size, channels, image, device)
+      inputs = inputs.to(device)
 
       # prediction image label.
       predicted = model(inputs)
