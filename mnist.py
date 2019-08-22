@@ -130,7 +130,7 @@ def train(train_dataloader, model, criterion, optimizer, epoch):
     if i % 5 == 0:
       print(f"Epoch [{epoch + 1}] [{i}/{len(train_dataloader)}]\t"
             f"Time {data_time.val:.3f} ({data_time.avg:.3f})\t"
-            f"Loss {loss.item():.4f}\\t"
+            f"Loss {loss.item():.4f}\t"
             f"Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t"
             f"Prec@5 {top5.val:.3f} ({top5.avg:.3f})", end="\r")
   torch.save(model.state_dict(), f"./checkpoints/{opt.datasets}_epoch_{epoch + 1}.pth")
