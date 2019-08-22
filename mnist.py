@@ -273,7 +273,6 @@ if __name__ == '__main__':
       print("Loading model...\n")
       model.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage))
       print("Loading model successful!")
-      test(model)
       visual(model)
     else:
       print("WARNING: You want use eval pattern, so you should add --model_path MODEL_PATH")
