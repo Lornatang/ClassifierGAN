@@ -15,6 +15,7 @@
 import argparse
 import os
 import random
+import time
 
 import torch.backends.cudnn as cudnn
 import torch.utils.data.dataloader
@@ -24,10 +25,15 @@ import torchvision.transforms as transforms
 
 from nets.alexnet_test import alexnet
 from nets.lenet import lenet
+from utils.eval import accuracy
+from utils.misc import AverageMeter
 
 parser = argparse.ArgumentParser(description='PyTorch MNIST Classifier')
 parser.add_argument('--dataroot', type=str, default="~/pytorch_datasets", help="download train dataset path.")
 parser.add_argument('--datasets', type=str, default="mnist", help="mnist datasets or fashion-mnist datasets.")
+parser.add_argument('--lr', type=float, default=0.1, help="starting lr, every 30 epoch decay 10.")
+parser.add_argument('--momentum', type=float, default=0.9, help="The ratio of accelerating convergence.")
+parser.add_argument('--weight_decay', type=float, default=1e-4, help="Mainly to prevent overfitting.")
 parser.add_argument('--phase', type=str, default='eval', help="train or eval?")
 parser.add_argument('--model_path', type=str, default="", help="load model path.")
 opt = parser.parse_args()
@@ -97,66 +103,95 @@ else:
 
 # Load model
 if opt.datasets == "mnist":
-  net = lenet(nc=1, num_classes=10)
+  model = lenet(nc=1, num_classes=10)
 elif opt.datasets == "fmnist":
-  net = alexnet(nc=1, num_classes=10)
+  model = alexnet(nc=1, num_classes=10)
 else:
-  net = ""
+  model = ""
   print(opt)
 
 if opt.model_path != "":
-  net.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage))
+  model.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage))
 
-net.to(device)
-print(net)
+model.to(device)
+print(model)
 
 # Loss function
 criterion = torch.nn.CrossEntropyLoss()
 
 # Optimizer
-optimizer = torch.optim.SGD(net.parameters(), lr=1e-3, momentum=0.9)
+optimizer = torch.optim.SGD(model.parameters(), lr=opt.lr, momentum=opt.momentum, weight_decay=opt.weight_decay)
 
 
 def train():
-  # Load model
+  batch_time = AverageMeter()
+  data_time = AverageMeter()
+  losses = AverageMeter()
+  top1 = AverageMeter()
+  top5 = AverageMeter()
+
+  # switch to train mode
+  model.train()
+
+  end = time.time()
   for epoch in range(50):
     for i, data in enumerate(train_dataloader):
+
+      # measure data loading time 计算加载数据的时间
+      data_time.update(time.time() - end)
+
       # get the inputs; data is a list of [inputs, labels]
-      inputs, labels = data
+      inputs, targets = data
       inputs = inputs.to(device)
-      labels = labels.to(device)
+      targets = targets.to(device)
 
-      # zero the parameter gradients
+      # compute output
+      output = model(inputs)
+      loss = criterion(output, targets)
+
+      # measure accuracy and record loss
+      prec1, prec5 = accuracy(output, targets, topk=(1, 5))
+      losses.update(loss.item(), inputs.size(0))
+      top1.update(prec1[0], inputs.size(0))
+      top5.update(prec5[0], inputs.size(0))
+
+      # compute gradients in a backward pass
       optimizer.zero_grad()
-
-      # forward + backward + optimize
-      outputs = net(inputs)
-      loss = criterion(outputs, labels)
       loss.backward()
+
+      # Call step of optimizer to update model params
       optimizer.step()
 
+      # measure elapsed time
+      batch_time.update(time.time() - end)
+      end = time.time()
+
       if i % 5 == 0:
-        print(f"Train Epoch: {epoch} [{i * 128}/{len(train_dataloader.dataset)} "
-              f"({100. * i / len(train_dataloader):.2f}%)] "
-              f"Loss: {loss.item():.6f}", end="\r")
-    torch.save(net.state_dict(), f"./checkpoints/{opt.datasets}_epoch_{epoch + 1}.pth")
+        print(f"Epoch: [{epoch}] [{i}/{len(train_dataloader)}\t"
+              f"Time: {data_time.val:.3f} ({data_time.avg:.3f})\t"
+              f"Loss: {loss.item():.6f}\t"
+              f"Prec@1 {top1.val:.3f} ({top1.avg:.3f})\t"
+              f"Prec@5 {top5.val:.3f} ({top5.avg:.3f})")
+    torch.save(model.state_dict(), f"./checkpoints/{opt.datasets}_epoch_{epoch + 1}.pth")
 
 
 def test(model):
-  # Load model
-  correct = 0.
+  # switch to evaluate mode
+  model.eval()
+  # init value
   total = 0.
+  correct = 0.
   with torch.no_grad():
     for i, data in enumerate(test_dataloader):
       # get the inputs; data is a list of [inputs, labels]
-      inputs, labels = data
+      inputs, targets = data
       inputs = inputs.to(device)
-      labels = labels.to(device)
+      targets = targets.to(device)
 
       outputs = model(inputs)
       _, predicted = torch.max(outputs.data, 1)
-      total += labels.size(0)
-      correct += (predicted == labels).sum().item()
+      total += targets.size(0)
+      correct += (predicted == targets).sum().item()
 
   print(f"\nAccuracy of the network on the 10000 test images: {100 * correct / total:.2f}%\n")
 
@@ -209,10 +244,10 @@ if __name__ == '__main__':
   elif opt.phase == "eval":
     if opt.model_path != "":
       print("Loading model...\n")
-      net.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage))
+      model.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage))
       print("Loading model successful!")
-      test(net)
-      visual(net)
+      test(model)
+      visual(model)
     else:
       print("WARNING: You want use eval pattern, so you should add --model_path MODEL_PATH")
   else:

@@ -13,7 +13,8 @@
 # ==============================================================================
 
 """Some helper functions for PyTorch, including:
-    - avergeMeter
+    - avergeMeter: Calculate and return the top-k accuracy of the model
+                   so that we can track the learning process.
 """
 
 __all__ = ['AverageMeter']
