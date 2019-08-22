@@ -35,6 +35,7 @@ parser.add_argument('--lr', type=float, default=0.1, help="starting lr, every 30
 parser.add_argument('--momentum', type=float, default=0.9, help="The ratio of accelerating convergence.")
 parser.add_argument('--weight_decay', type=float, default=1e-4, help="Mainly to prevent overfitting.")
 parser.add_argument('--epochs', type=int, default=200, help="Train loop")
+parser.add_argument('--every_epoch', type=int, default=10, help="Every epoch lr / 10.")
 parser.add_argument('--phase', type=str, default='eval', help="train or eval?")
 parser.add_argument('--model_path', type=str, default="", help="load model path.")
 opt = parser.parse_args()
@@ -59,9 +60,9 @@ train_dataloader, test_dataloader = load_datasets(opt.datasets, opt.dataroot, op
 
 # Load model
 if opt.datasets == "mnist":
-  model = lenet()
+  model = torch.nn.DataParallel(lenet())
 elif opt.datasets == "fmnist":
-  model = resnet18()
+  model = torch.nn.DataParallel(resnet18())
 else:
   model = ""
   print(opt)
@@ -197,7 +198,7 @@ def run():
   best_prec1 = 0.
   for epoch in range(opt.epochs):
     # Adjust learning rate according to schedule
-    adjust_learning_rate(opt.lr, optimizer, epoch)
+    adjust_learning_rate(opt.lr, optimizer, epoch, opt.every_epoch)
 
     # train for one epoch
     print(f"\nBegin Training Epoch {epoch + 1}")
