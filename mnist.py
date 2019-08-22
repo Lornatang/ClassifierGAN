@@ -22,8 +22,8 @@ import torchvision
 import torchvision.datasets as dset
 import torchvision.transforms as transforms
 
+from nets.alexnet_test import alexnet
 from nets.lenet import lenet
-from nets.custom_alexnet import customalexnet
 
 parser = argparse.ArgumentParser(description='PyTorch MNIST Classifier')
 parser.add_argument('--dataroot', type=str, default="~/pytorch_datasets", help="download train dataset path.")
@@ -92,12 +92,17 @@ elif opt.datasets == "fmnist":
 
   test_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=128,
                                                 shuffle=False, num_workers=8)
+else:
+  print(opt)
 
 # Load model
 if opt.datasets == "mnist":
   net = lenet(nc=1, num_classes=10)
+elif opt.datasets == "fmnist":
+  net = alexnet(nc=1, num_classes=10)
 else:
-  net = customalexnet(nc=1, num_classes=10)
+  net = ""
+  print(opt)
 
 if opt.model_path != "":
   net.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage))
@@ -193,6 +198,8 @@ def visual(model):
                "Ankle_boot"]
     for i in range(10):
       print(f"Accuracy of {classes[i]:20s} : {100 * class_correct[i] / class_total[i]:.2f}%")
+  else:
+    pass
 
 
 if __name__ == '__main__':
