@@ -25,6 +25,7 @@ import torchvision.transforms as transforms
 
 from nets.alexnet_test import alexnet
 from nets.lenet import lenet
+from utils.adjust import adjust_learning_rate
 from utils.eval import accuracy
 from utils.misc import AverageMeter
 
@@ -34,6 +35,7 @@ parser.add_argument('--datasets', type=str, default="mnist", help="mnist dataset
 parser.add_argument('--lr', type=float, default=0.1, help="starting lr, every 30 epoch decay 10.")
 parser.add_argument('--momentum', type=float, default=0.9, help="The ratio of accelerating convergence.")
 parser.add_argument('--weight_decay', type=float, default=1e-4, help="Mainly to prevent overfitting.")
+parser.add_argument('--epochs', type=int, default=200, help="Train loop")
 parser.add_argument('--phase', type=str, default='eval', help="train or eval?")
 parser.add_argument('--model_path', type=str, default="", help="load model path.")
 opt = parser.parse_args()
@@ -124,7 +126,7 @@ criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=opt.lr, momentum=opt.momentum, weight_decay=opt.weight_decay)
 
 
-def train():
+def train(train_dataloader, model, criterion, optimizer, epochs):
   batch_time = AverageMeter()
   data_time = AverageMeter()
   losses = AverageMeter()
@@ -134,8 +136,8 @@ def train():
   # switch to train mode
   model.train()
 
-  end = time.time()
-  for epoch in range(50):
+  end = time.time(epochs)
+  for epoch in range():
     for i, data in enumerate(train_dataloader):
 
       # measure data loading time 计算加载数据的时间
@@ -153,8 +155,8 @@ def train():
       # measure accuracy and record loss
       prec1, prec5 = accuracy(output, targets, topk=(1, 5))
       losses.update(loss.item(), inputs.size(0))
-      top1.update(prec1[0], inputs.size(0))
-      top5.update(prec5[0], inputs.size(0))
+      top1.update(prec1, inputs.size(0))
+      top5.update(prec5, inputs.size(0))
 
       # compute gradients in a backward pass
       optimizer.zero_grad()
@@ -176,7 +178,7 @@ def train():
     torch.save(model.state_dict(), f"./checkpoints/{opt.datasets}_epoch_{epoch + 1}.pth")
 
 
-def test(model):
+def test(test_dataloader, model):
   # switch to evaluate mode
   model.eval()
   # init value
@@ -194,10 +196,11 @@ def test(model):
       total += targets.size(0)
       correct += (predicted == targets).sum().item()
 
-  print(f"\nAccuracy of the network on the 10000 test images: {100 * correct / total:.2f}%\n")
+  accuracy = 100 * correct / total
+  return accuracy
 
 
-def visual(model):
+def visual(test_dataloader, model):
   class_correct = list(0. for _ in range(10))
   class_total = list(0. for _ in range(10))
 
@@ -238,10 +241,33 @@ def visual(model):
     pass
 
 
+def run():
+  best_prec1 = 0.
+  for epoch in range(opt.epochs):
+    # Adjust learning rate according to schedule
+    adjust_learning_rate(opt.lr, optimizer, epoch)
+
+    # train for one epoch
+    print("\nBegin Training Epoch {}".format(epoch + 1))
+    train(train_dataloader, model, criterion, optimizer, epoch)
+
+    # evaluate on validation set
+    print("Begin Validation @ Epoch {}".format(epoch + 1))
+    prec1 = test(test_dataloader, model)
+
+    # remember best prec@1 and save checkpoint if desired
+    # is_best = prec1 > best_prec1
+    best_prec1 = max(prec1, best_prec1)
+
+    print("Epoch Summary: ")
+    print(f"\tEpoch Accuracy: {prec1}")
+    print(f"\tBest Accuracy: {best_prec1}")
+
+
 if __name__ == '__main__':
 
   if opt.phase == "train":
-    train()
+    run()
   elif opt.phase == "eval":
     if opt.model_path != "":
       print("Loading model...\n")
