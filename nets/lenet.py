@@ -20,7 +20,7 @@ __all__ = ['LeNet', 'lenet']
 
 class LeNet(nn.Module):
 
-  def __init__(self, nc, num_classes):
+  def __init__(self):
     super(LeNet, self).__init__()
     self.features = nn.Sequential(
       nn.Conv2d(1, 6, kernel_size=3, stride=1, padding=1),
