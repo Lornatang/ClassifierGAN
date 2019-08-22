@@ -59,7 +59,7 @@ train_dataloader, test_dataloader = load_datasets(opt.datasets, opt.dataroot, op
 
 # Load model
 if opt.datasets == "mnist":
-  model = lenet(nc=1, num_classes=10)
+  model = lenet()
 elif opt.datasets == "fmnist":
   model = resnet18()
 else:
