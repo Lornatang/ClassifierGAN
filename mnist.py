@@ -36,7 +36,7 @@ parser.add_argument('--momentum', type=float, default=0.9, help="The ratio of ac
 parser.add_argument('--weight_decay', type=float, default=1e-5, help="Mainly to prevent overfitting.")
 parser.add_argument('--epochs', type=int, default=50, help="Train loop")
 parser.add_argument('--every_epoch', type=int, default=10, help="Every epoch lr / 10.")
-parser.add_argument('--phase', type=str, default='eval', help="train or eval?")
+parser.add_argument('--phase', type=str, default='eval', help="train or eval? default:`eval`")
 parser.add_argument('--model_path', type=str, default="", help="load model path.")
 opt = parser.parse_args()
 print(opt)
