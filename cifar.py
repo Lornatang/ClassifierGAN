@@ -21,6 +21,7 @@ import torch.backends.cudnn as cudnn
 import torch.utils.data.dataloader
 
 from nets.vgg_test import vgg19_bn
+from nets.densenet_test import densenet121
 from utils.adjust import adjust_learning_rate
 from utils.datasets import load_datasets
 from utils.eval import accuracy
@@ -58,10 +59,19 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 train_dataloader, test_dataloader = load_datasets(opt.datasets, opt.dataroot, opt.batch_size)
 
 # Load model
-if torch.cuda.device_count() > 1:
-  model = torch.nn.DataParallel(vgg19_bn())
+if opt.datasets == "cifar10":
+  if torch.cuda.device_count() > 1:
+    model = torch.nn.DataParallel(vgg19_bn())
+  else:
+    model = vgg19_bn()
+elif opt.datasets == "cifar100":
+  if torch.cuda.device_count() > 1:
+    model = torch.nn.DataParallel(densenet121())
+  else:
+    model = densenet121()
 else:
-  model = vgg19_bn()
+  model = ""
+  print(opt)
 
 model.to(device)
 print(model)
