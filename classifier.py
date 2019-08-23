@@ -25,7 +25,6 @@ parser.add_argument('--datasets', type=str, default="mnist", help="Datasets name
 parser.add_argument('--dataroot', type=str, default="test_imgs", help="Data folders to categorize.")
 parser.add_argument('--img_size', type=int, default=28, help="Data folders to categorize.")
 parser.add_argument('--channels', type=int, default=1, help="Number of channels in the image")
-parser.add_argument('--classes_names', type=int, help="Number of channels in the image")
 parser.add_argument('--model_path', type=str, help="Load model path.")
 opt = parser.parse_args()
 print(opt)
@@ -43,7 +42,7 @@ elif opt.datasets == "fmnist":
 if opt.datasets == "mnist":
   classes_names = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
 elif opt.datasets == "fmnist":
-  classes_names = ["T-shirt/top",
+  classes_names = ["T-shirt",
                    "Trouser",
                    "Pullover",
                    "Dress",
@@ -52,7 +51,7 @@ elif opt.datasets == "fmnist":
                    "Skirt",
                    "Sneaker",
                    "Bag",
-                   "Ankle_boot"]
+                   "Ankle-boot"]
 
 
 def run():
