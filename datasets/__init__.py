@@ -17,4 +17,7 @@ from .mnist import FashionMNIST
 from .mnist import KMNIST
 from .mnist import MNIST
 
-__all__ = ('EMNIST', 'FashionMNIST', 'KMNIST', 'MNIST',)
+from .cifar import CIFAR10
+from .cifar import CIFAR100
+
+__all__ = ('EMNIST', 'FashionMNIST', 'KMNIST', 'MNIST', 'CIFAR10', 'CIFAR100')

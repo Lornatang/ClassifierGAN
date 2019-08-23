@@ -23,7 +23,7 @@ import numpy as np
 import torch
 from PIL import Image
 
-from datasets.util import download_url, download_and_extract_archive, extract_archive, \
+from datasets.utils import download_url, download_and_extract_archive, extract_archive, \
   makedir_exist_ok, verify_str_arg
 from datasets.vision import VisionDataset
 

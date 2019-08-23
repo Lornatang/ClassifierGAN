@@ -12,6 +12,4 @@
 # limitations under the License.
 # ==============================================================================
 
-from .alexnet import *
-from .resnet import *
-from .vgg import *
+import torchvision.models.alexnet
