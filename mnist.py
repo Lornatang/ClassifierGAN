@@ -20,6 +20,7 @@ import time
 import torch.backends.cudnn as cudnn
 import torch.utils.data.dataloader
 
+from nets.alexnet_test import alexnet
 from nets.resnet_test import resnet18
 from nets.lenet import lenet
 from utils.adjust import adjust_learning_rate
@@ -29,7 +30,7 @@ from utils.misc import AverageMeter
 
 parser = argparse.ArgumentParser(description='PyTorch MNIST Classifier')
 parser.add_argument('--dataroot', type=str, default="~/pytorch_datasets", help="download train dataset path.")
-parser.add_argument('--datasets', type=str, default="mnist", help="mnist datasets or fashion-mnist datasets.")
+parser.add_argument('--datasets', type=str, default="mnist", help="mnist | fashion-mnist | qmnist datasets.")
 parser.add_argument('--batch_size', type=int, default=128, help="Every train dataset size.")
 parser.add_argument('--lr', type=float, default=0.01, help="starting lr, every 10 epoch decay 10.")
 parser.add_argument('--momentum', type=float, default=0.9, help="The ratio of accelerating convergence.")
@@ -69,6 +70,11 @@ elif opt.datasets == "fmnist":
     model = torch.nn.DataParallel(resnet18())
   else:
     model = resnet18()
+elif opt.datasets == "qmnist":
+  if torch.cuda.device_count() > 1:
+    model = torch.nn.DataParallel(alexnet())
+  else:
+    model = alexnet()
 else:
   model = ""
   print(opt)
@@ -176,8 +182,8 @@ def visual(model):
         class_correct[label] += c[i].item()
         class_total[label] += 1
 
-  if opt.datasets == "mnist":
-    classes = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+  if opt.datasets == "mnist" or opt.datasets == "qmnist":
+    classes = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
     for i in range(10):
       print(f"Accuracy of {classes[i]:5s} : {100 * class_correct[i] / class_total[i]:.2f}%")
   elif opt.datasets == "fmnist":
