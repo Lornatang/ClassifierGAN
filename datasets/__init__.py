@@ -16,6 +16,7 @@ from .mnist import EMNIST
 from .mnist import FashionMNIST
 from .mnist import KMNIST
 from .mnist import MNIST
+from .mnist import QMNIST
 
 from .cifar import CIFAR10
 from .cifar import CIFAR100
