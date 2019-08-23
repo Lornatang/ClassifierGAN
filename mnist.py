@@ -181,7 +181,7 @@ def visual(model):
     for i in range(10):
       print(f"Accuracy of {classes[i]:5s} : {100 * class_correct[i] / class_total[i]:.2f}%")
   elif opt.datasets == "fmnist":
-    classes = ["T-shirt/top",
+    classes = ["T-shirt",
                "Trouser",
                "Pullover",
                "Dress",
@@ -190,7 +190,7 @@ def visual(model):
                "Skirt",
                "Sneaker",
                "Bag",
-               "Ankle_boot"]
+               "Ankle boot"]
     for i in range(10):
       print(f"Accuracy of {classes[i]:20s} : {100 * class_correct[i] / class_total[i]:.2f}%")
   else:
@@ -225,7 +225,7 @@ if __name__ == '__main__':
   elif opt.phase == "eval":
     if opt.model_path != "":
       print("Loading model...\n")
-      model.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage))
+      model.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage), False)
       print("Loading model successful!")
       accuracy = test(model)
       print(f"\nAccuracy of the network on the 10000 test images: {accuracy:.2f}%.\n")
