@@ -222,7 +222,6 @@ def run():
 
 
 if __name__ == '__main__':
-
   if opt.phase == "train":
     run()
   elif opt.phase == "eval":
