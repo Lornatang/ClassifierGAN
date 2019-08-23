@@ -30,7 +30,7 @@ from utils.misc import AverageMeter
 
 parser = argparse.ArgumentParser(description='PyTorch MNIST Classifier')
 parser.add_argument('--dataroot', type=str, default="~/pytorch_datasets", help="download train dataset path.")
-parser.add_argument('--datasets', type=str, default="mnist", help="mnist | fashion-mnist | qmnist datasets.")
+parser.add_argument('--datasets', type=str, default="mnist", help="mnist | fashion-mnist | kmnist | qmnist datasets.")
 parser.add_argument('--batch_size', type=int, default=128, help="Every train dataset size.")
 parser.add_argument('--lr', type=float, default=0.01, help="starting lr, every 10 epoch decay 10.")
 parser.add_argument('--momentum', type=float, default=0.9, help="The ratio of accelerating convergence.")
@@ -65,7 +65,7 @@ if opt.datasets == "mnist":
     model = torch.nn.DataParallel(lenet())
   else:
     model = lenet()
-elif opt.datasets == "fmnist":
+elif opt.datasets == "fmnist" or opt.datasets == "kmnist":
   if torch.cuda.device_count() > 1:
     model = torch.nn.DataParallel(resnet18())
   else:
@@ -199,6 +199,10 @@ def visual(model):
                "Ankle boot"]
     for i in range(10):
       print(f"Accuracy of {classes[i]:20s} : {100 * class_correct[i] / class_total[i]:.2f}%")
+  elif opt.datasets == "kmnist":
+    classes = ['o', 'ki', 'su', 'tsu', 'na', 'ha', 'ma', 'ya', 're', 'wo']
+    for i in range(10):
+      print(f"Accuracy of {classes[i]:5s} : {100 * class_correct[i] / class_total[i]:.2f}%")
   else:
     pass
 
@@ -234,7 +238,7 @@ if __name__ == '__main__':
       model.load_state_dict(torch.load(opt.model_path, map_location=lambda storage, loc: storage), False)
       print("Loading model successful!")
       accuracy = test(model)
-      print(f"\nAccuracy of the network on the 10000 test images: {accuracy:.2f}%.\n")
+      print(f"\nAccuracy of the network on the test images: {accuracy:.2f}%.\n")
       visual(model)
     else:
       print("WARNING: You want use eval pattern, so you should add --model_path MODEL_PATH")
