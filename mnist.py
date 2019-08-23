@@ -64,12 +64,14 @@ if opt.datasets == "mnist":
     model = torch.nn.DataParallel(lenet())
   else:
     model = lenet()
-
-else:
+elif opt.datasets == "fmnist":
   if torch.cuda.device_count() > 1:
     model = torch.nn.DataParallel(resnet18())
   else:
     model = resnet18()
+else:
+  model = ""
+  print(opt)
 
 model.to(device)
 print(model)
