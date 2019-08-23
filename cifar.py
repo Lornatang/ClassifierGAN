@@ -20,7 +20,7 @@ import time
 import torch.backends.cudnn as cudnn
 import torch.utils.data.dataloader
 
-from nets.vgg_test import vgg11
+from nets.vgg_test import vgg19_bn
 from utils.adjust import adjust_learning_rate
 from utils.datasets import load_datasets
 from utils.eval import accuracy
@@ -59,9 +59,9 @@ train_dataloader, test_dataloader = load_datasets(opt.datasets, opt.dataroot, op
 
 # Load model
 if torch.cuda.device_count() > 1:
-  model = torch.nn.DataParallel(vgg11())
+  model = torch.nn.DataParallel(vgg19_bn())
 else:
-  model = vgg11()
+  model = vgg19_bn()
 
 model.to(device)
 print(model)
